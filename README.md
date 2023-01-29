@@ -45,6 +45,7 @@ If the properties of the entity are not specified, then return the id of it.
     }
 }
 ```
+
    2.2. Get user, profile, post, memberType by id - 4 operations in one query.  
    2.3. Get users with their posts, profiles, memberTypes.  
    2.4. Get user by id with his posts, profile, memberType.  
