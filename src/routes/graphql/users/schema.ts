@@ -9,7 +9,7 @@ import { memberType } from '../member-types/schema';
 import { post } from '../posts/schema';
 import { profile } from '../profiles/schema';
 
-const user = new GraphQLObjectType({
+const user: any = new GraphQLObjectType({
   name: 'user',
   fields: () => ({
     id: { type: GraphQLString },
@@ -22,13 +22,54 @@ const user = new GraphQLObjectType({
       async resolve(parent: any, args: any, context: any) {
         const posts = await context.db.posts.findMany({
           key: 'userId',
-          equals: args.id,
+          equals: parent.id,
         });
         return posts;
       },
     },
-    profile: { type: profile },
-    memberType: { type: memberType },
+    profile: {
+      type: profile,
+      async resolve(parent: any, args: any, context: any) {
+        return await context.db.profiles.findOne({
+          key: 'userId',
+          equals: parent.id,
+        });
+      },
+    },
+    memberType: {
+      type: memberType,
+      async resolve(parent: any, args: any, context: any) {
+        const profile = await context.db.profiles.findOne({
+          key: 'userId',
+          equals: parent.id,
+        });
+        if (!profile) {
+          return null;
+        }
+        return await context.db.memberTypes.findOne({
+          key: 'id',
+          equals: profile.memberTypeId,
+        });
+      },
+    },
+    userSubscribedTo: {
+      type: new GraphQLList(user),
+      async resolve(parent: any, args: any, context: any) {
+        return await context.db.users.findMany({
+          key: 'subscribedToUserIds',
+          inArray: parent.id,
+        });
+      },
+    },
+    subscribedToUser: {
+      type: new GraphQLList(user),
+      async resolve(parent: any, args: any, context: any) {
+        return await context.db.users.findMany({
+          key: 'id',
+          equalsAnyOf: parent.subscribedToUserIds,
+        });
+      },
+    },
   }),
 });
 
@@ -50,4 +91,12 @@ const updateUserDto = new GraphQLInputObjectType({
   }),
 });
 
-export { user, createUserDto, updateUserDto };
+const subscriptionDto = new GraphQLInputObjectType({
+  name: 'subscriptionDto',
+  fields: () => ({
+    id: { type: new GraphQLNonNull(GraphQLString) },
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+  }),
+});
+
+export { user, createUserDto, updateUserDto, subscriptionDto };

@@ -7,7 +7,14 @@ import {
   createProfile,
   updateProfile,
 } from './profiles';
-import { getUsers, getUserById, createUser, updateUser } from './users/index';
+import {
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  unsubscribeFromUser,
+  subscribeToUser,
+} from './users/index';
 
 export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -33,6 +40,8 @@ export const schema = new GraphQLSchema({
       updatePost: updatePost,
       updateProfile: updateProfile,
       updateType: updateType,
+      unsubscribeFromUser: unsubscribeFromUser,
+      subscribeToUser: subscribeToUser,
     },
   }),
 });
