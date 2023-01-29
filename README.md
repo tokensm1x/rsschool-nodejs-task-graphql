@@ -12,6 +12,7 @@ If the properties of the entity are not specified, then return the id of it.
    
    * Get gql requests:  
    2.1. Get users, profiles, posts, memberTypes - 4 operations in one query.  
+   
    ```
    query {
     users {
