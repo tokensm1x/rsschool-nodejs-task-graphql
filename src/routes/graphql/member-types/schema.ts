@@ -1,6 +1,11 @@
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLInputObjectType,
+} from 'graphql';
 
-export const memberType = new GraphQLObjectType({
+const memberType = new GraphQLObjectType({
   name: 'memberType',
   fields: () => ({
     id: { type: GraphQLString },
@@ -8,3 +13,13 @@ export const memberType = new GraphQLObjectType({
     monthPostsLimit: { type: GraphQLInt },
   }),
 });
+
+const updateTypeDto = new GraphQLInputObjectType({
+  name: 'updateTypeDto',
+  fields: () => ({
+    discount: { type: GraphQLInt },
+    monthPostsLimit: { type: GraphQLInt },
+  }),
+});
+
+export { memberType, updateTypeDto };

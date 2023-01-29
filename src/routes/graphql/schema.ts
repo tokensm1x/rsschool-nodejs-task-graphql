@@ -1,8 +1,13 @@
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
-import { getMemberTypes } from './member-types';
-import { getPosts } from './posts';
-import { getProfiles } from './profiles';
-import { getUsers } from './users/index';
+import { getMemberTypes, getMemberTypeById, updateType } from './member-types';
+import { getPosts, getPostById, createPost, updatePost } from './posts';
+import {
+  getProfiles,
+  getProfileById,
+  createProfile,
+  updateProfile,
+} from './profiles';
+import { getUsers, getUserById, createUser, updateUser } from './users/index';
 
 export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -12,6 +17,22 @@ export const schema = new GraphQLSchema({
       posts: getPosts,
       profiles: getProfiles,
       memberTypes: getMemberTypes,
+      memberType: getMemberTypeById,
+      post: getPostById,
+      profile: getProfileById,
+      user: getUserById,
+    },
+  }),
+  mutation: new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+      createUser: createUser,
+      createProfile: createProfile,
+      createPost: createPost,
+      updateUser: updateUser,
+      updatePost: updatePost,
+      updateProfile: updateProfile,
+      updateType: updateType,
     },
   }),
 });
