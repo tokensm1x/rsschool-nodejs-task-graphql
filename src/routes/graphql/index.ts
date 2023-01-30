@@ -1,6 +1,10 @@
 import { FastifyPluginAsyncJsonSchemaToTs } from '@fastify/type-provider-json-schema-to-ts';
 import { graphqlBodySchema, schema } from './schema';
-import { graphql } from 'graphql';
+import { graphql, parse } from 'graphql';
+import { validate } from 'graphql/validation';
+import depthLimit from 'graphql-depth-limit';
+
+const depth_limit = 6;
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -14,6 +18,12 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
     },
     async function (request: any, reply) {
       const { query } = request.body;
+      const isInvalid = !!validate(schema, parse(query), [
+        depthLimit(depth_limit),
+      ]).length;
+      if (isInvalid) {
+        throw reply.badRequest('Depth limit validation error');
+      }
       return await graphql({
         schema: schema,
         source: query,

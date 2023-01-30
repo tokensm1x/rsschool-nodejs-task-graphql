@@ -11,6 +11,7 @@ import { profile } from '../profiles/schema';
 
 const user: any = new GraphQLObjectType({
   name: 'user',
+
   fields: () => ({
     id: { type: GraphQLString },
     firstName: { type: GraphQLString },
