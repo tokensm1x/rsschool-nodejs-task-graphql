@@ -4,7 +4,8 @@ import { post, createPostDto, updatePostDto } from './schema';
 const getPosts = {
   type: new GraphQLList(post),
   async resolve(parent: any, args: any, context: any) {
-    return await context.db.posts.findMany();
+    const { fastify } = context;
+    return await fastify.db.posts.findMany();
   },
 };
 
@@ -12,7 +13,8 @@ const getPostById = {
   type: post,
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
   async resolve(parent: any, args: any, context: any) {
-    const post = await context.db.posts.findOne({
+    const { fastify } = context;
+    const post = await fastify.db.posts.findOne({
       key: 'id',
       equals: args.id,
     });
@@ -31,7 +33,8 @@ const createPost = {
     },
   },
   async resolve(parent: any, args: any, context: any) {
-    return await context.db.posts.create(args.data);
+    const { fastify } = context;
+    return await fastify.db.posts.create(args.data);
   },
 };
 
@@ -46,7 +49,8 @@ const updatePost = {
   async resolve(parent: any, args: any, context: any) {
     try {
       const { id, data } = args;
-      return await context.db.posts.change(id, data);
+      const { fastify } = context;
+      return await fastify.db.posts.change(id, data);
     } catch (e: any) {
       throw new Error(e.message || e);
     }

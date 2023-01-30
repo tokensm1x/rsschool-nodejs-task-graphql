@@ -4,7 +4,8 @@ import { memberType, updateTypeDto } from './schema';
 const getMemberTypes = {
   type: new GraphQLList(memberType),
   async resolve(parent: any, args: any, context: any) {
-    return await context.db.memberTypes.findMany();
+    const { fastify } = context;
+    return await fastify.db.memberTypes.findMany();
   },
 };
 
@@ -12,7 +13,8 @@ const getMemberTypeById = {
   type: memberType,
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
   async resolve(parent: any, args: any, context: any) {
-    const type = await context.db.memberTypes.findOne({
+    const { fastify } = context;
+    const type = await fastify.db.memberTypes.findOne({
       key: 'id',
       equals: args.id,
     });
@@ -34,7 +36,8 @@ const updateType = {
   async resolve(parent: any, args: any, context: any) {
     try {
       const { id, data } = args;
-      return await context.db.memberTypes.change(id, data);
+      const { fastify } = context;
+      return await fastify.db.memberTypes.change(id, data);
     } catch (e: any) {
       throw new Error(e.message || e);
     }

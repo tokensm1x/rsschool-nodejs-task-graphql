@@ -4,7 +4,8 @@ import { profile, createProfileDto, updateProfileDto } from './schema';
 const getProfiles = {
   type: new GraphQLList(profile),
   async resolve(parent: any, args: any, context: any) {
-    return await context.db.profiles.findMany();
+    const { fastify } = context;
+    return await fastify.db.profiles.findMany();
   },
 };
 
@@ -12,7 +13,8 @@ const getProfileById = {
   type: profile,
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
   async resolve(parent: any, args: any, context: any) {
-    const profile = await context.db.profiles.findOne({
+    const { fastify } = context;
+    const profile = await fastify.db.profiles.findOne({
       key: 'id',
       equals: args.id,
     });
@@ -29,7 +31,8 @@ const createProfile = {
     data: { type: new GraphQLNonNull(createProfileDto) },
   },
   async resolve(parent: any, args: any, context: any) {
-    return await context.db.profiles.create(args.data);
+    const { fastify } = context;
+    return await fastify.db.profiles.create(args.data);
   },
 };
 
@@ -42,7 +45,8 @@ const updateProfile = {
   async resolve(parent: any, args: any, context: any) {
     try {
       const { id, data } = args;
-      return await context.db.profiles.change(id, data);
+      const { fastify } = context;
+      return await fastify.db.profiles.change(id, data);
     } catch (e: any) {
       throw new Error(e.message || e);
     }

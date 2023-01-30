@@ -3,6 +3,8 @@ import { graphqlBodySchema, schema } from './schema';
 import { graphql, parse } from 'graphql';
 import { validate } from 'graphql/validation';
 import depthLimit from 'graphql-depth-limit';
+import DataLoader from 'dataloader';
+import { batchUsers, batchSubscribedUsers } from './data-loaders/users-loader';
 
 const depth_limit = 6;
 
@@ -30,7 +32,13 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       return await graphql({
         schema: schema,
         source: query,
-        contextValue: fastify,
+        contextValue: {
+          fastify: fastify,
+          usersLoader: new DataLoader((keys) => batchUsers(keys, fastify)),
+          subscribedUsersLoader: new DataLoader((keys) =>
+            batchSubscribedUsers(keys, fastify)
+          ),
+        },
       });
     }
   );

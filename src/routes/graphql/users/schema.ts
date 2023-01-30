@@ -21,7 +21,8 @@ const user: any = new GraphQLObjectType({
     posts: {
       type: new GraphQLList(post),
       async resolve(parent: any, args: any, context: any) {
-        const posts = await context.db.posts.findMany({
+        const { fastify } = context;
+        const posts = await fastify.db.posts.findMany({
           key: 'userId',
           equals: parent.id,
         });
@@ -31,7 +32,8 @@ const user: any = new GraphQLObjectType({
     profile: {
       type: profile,
       async resolve(parent: any, args: any, context: any) {
-        return await context.db.profiles.findOne({
+        const { fastify } = context;
+        return await fastify.db.profiles.findOne({
           key: 'userId',
           equals: parent.id,
         });
@@ -40,14 +42,15 @@ const user: any = new GraphQLObjectType({
     memberType: {
       type: memberType,
       async resolve(parent: any, args: any, context: any) {
-        const profile = await context.db.profiles.findOne({
+        const { fastify } = context;
+        const profile = await fastify.db.profiles.findOne({
           key: 'userId',
           equals: parent.id,
         });
         if (!profile) {
           return null;
         }
-        return await context.db.memberTypes.findOne({
+        return await fastify.db.memberTypes.findOne({
           key: 'id',
           equals: profile.memberTypeId,
         });
@@ -56,19 +59,15 @@ const user: any = new GraphQLObjectType({
     userSubscribedTo: {
       type: new GraphQLList(user),
       async resolve(parent: any, args: any, context: any) {
-        return await context.db.users.findMany({
-          key: 'subscribedToUserIds',
-          inArray: parent.id,
-        });
+        const { subscribedUsersLoader } = context;
+        return await subscribedUsersLoader.load(parent.id);
       },
     },
     subscribedToUser: {
       type: new GraphQLList(user),
       async resolve(parent: any, args: any, context: any) {
-        return await context.db.users.findMany({
-          key: 'id',
-          equalsAnyOf: parent.subscribedToUserIds,
-        });
+        const { usersLoader } = context;
+        return await usersLoader.loadMany(parent.subscribedToUserIds);
       },
     },
   }),
