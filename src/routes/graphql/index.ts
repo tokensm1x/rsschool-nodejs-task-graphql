@@ -22,7 +22,10 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
         depthLimit(depth_limit),
       ]).length;
       if (isInvalid) {
-        throw reply.badRequest('Depth limit validation error');
+        return reply.send({
+          data: null,
+          errors: `Depth limit validation error (Max ${depth_limit}) levels`,
+        });
       }
       return await graphql({
         schema: schema,
